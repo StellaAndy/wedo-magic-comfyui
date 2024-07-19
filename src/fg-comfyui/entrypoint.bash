@@ -94,7 +94,7 @@ fi
 
 mount_builtin_files
 
-CLI_ARGS="${CLI_ARGS:---listen 0.0.0.0 --port 8000 --input-directory ${NAS_DIR}/input --output-directory ${NAS_DIR}/output --temp-directory ${NAS_DIR}/output}"
+CLI_ARGS="${CLI_ARGS:---listen 127.0.0.1 --port 8188 --input-directory ${NAS_DIR}/input --output-directory ${NAS_DIR}/output --temp-directory ${NAS_DIR}/output}"
 EXTRA_ARGS="${EXTRA_ARGS:-}"
 
 export ARGS="${CLI_ARGS} ${EXTRA_ARGS}"
@@ -109,5 +109,6 @@ if [ -f "${NAS_DIR}/startup.sh" ]; then
   popd
 fi
 
-cd ${NAS_DIR} && python3 ${COMFYUI}/main.py ${ARGS}
+cd ${NAS_DIR} && nohup python3 ${COMFYUI}/main.py ${ARGS}  &
+python3 /flask_app/flaskDemo.py
 
