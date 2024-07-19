@@ -19,28 +19,34 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     psutil \
     kornia>=0.7.1 -i https://pypi.tuna.tsinghua.edu.cn/simple
 
-FROM alpine/git:2.36.2 as repos
+FROM alpine/git:latest as repos
 
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git /code && \
     cd /code && \
     git checkout 0a03009808a5ad13fa3a44edbabcae68576c3982 && \
     rm -rf .git
 
-FROM alpine/git:2.36.2 as custom_nodes
+FROM alpine/git:latest as custom_nodes
 
 WORKDIR /custom_nodes
 
 RUN git clone https://github.com/ltdrdata/ComfyUI-Manager.git && \
     cd ComfyUI-Manager && \
     git checkout 02b2bf96d24ed6297dad8f676aa68d7512a166b3 && \
+    rm -rf .git && \
+    git clone https://github.com/ZHO-ZHO-ZHO/ComfyUI-BRIA_AI-RMBG.git && \
+    cd ComfyUI-BRIA_AI-RMBG && \
+    git checkout 827fcd63ff0cfa7fbc544b8d2f4c1e3f3012742d && \
     rm -rf .git
 
 FROM python:3.10.9-slim as models
+RUN sed -i 's/http:\/\/deb.debian.org/http:\/\/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list && \
+    sed -i 's/http:\/\/security.debian.org/http:\/\/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list \
 
 RUN apt update && apt install -y aria2
 
-RUN aria2c -x 16 --dir "/models" --out "sd-v1-5-inpainting.ckpt" "https://huggingface.co/runwayml/stable-diffusion-inpainting/resolve/main/sd-v1-5-inpainting.ckpt"
-
+RUN aria2c -x 16 --dir "/models" --out "sd-v1-5-inpainting.ckpt" "https://hf-mirror.com/runwayml/stable-diffusion-inpainting/resolve/main/sd-v1-5-inpainting.ckpt"
+RUN aria2c -x 16 --dir "/RMBG-1.4" --out "model.pth" "https://hf-mirror.com/briaai/RMBG-1.4/resolve/main/model.pth"
 
 FROM python:3.10.9-slim as base
 
@@ -84,7 +90,7 @@ WORKDIR /
 
 # 确保依赖最新
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install -r ${COMFYUI}/requirements.txt --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple && \ 
+    pip install -r ${COMFYUI}/requirements.txt --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple && \
     find ${COMFYUI} -type f -name requirements.txt | xargs -I {} pip install -r {} -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 # 移动自带文件
@@ -126,7 +132,12 @@ COPY --from=models --chown=${USER_NAME}:${GROUP_NAME} /models ${BUILTIN}/models/
 
 # 内置自定义节点
 COPY --from=custom_nodes --chown=${USER_NAME}:${GROUP_NAME} /custom_nodes ${BUILTIN}/custom_nodes
+COPY --from=models --chown=${USER_NAME}:${GROUP_NAME} /RMBG-1.4 ${BUILTIN}/custom_nodes/ComfyUI-BRIA_AI-RMBG/RMBG-1.4
 
+COPY --chown=${USER_NAME}:${GROUP_NAME} ./flask_app /flask_app
+
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r /flask_app/requirements.txt
 # 更新依赖至最新
 RUN --mount=type=cache,target=/root/.cache/pip \
     find ${BUILTIN}/custom_nodes -type f -name requirements.txt | xargs -I {} pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r {}
