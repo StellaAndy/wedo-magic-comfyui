@@ -41,7 +41,7 @@ RUN git clone https://github.com/ltdrdata/ComfyUI-Manager.git && \
 
 FROM python:3.10.9-slim as models
 RUN sed -i 's/http:\/\/deb.debian.org/http:\/\/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list && \
-    sed -i 's/http:\/\/security.debian.org/http:\/\/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list \
+    sed -i 's/http:\/\/security.debian.org/http:\/\/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list
 
 RUN apt update && apt install -y aria2
 

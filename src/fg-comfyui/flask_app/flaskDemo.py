@@ -9,7 +9,7 @@ import json
 from PIL import Image
 import io
 
-server_address = "127.0.0.1:8188"
+server_address = "0.0.0.0:8188"
 client_id = str(uuid.uuid4())
 
 prompt_text = """
@@ -131,7 +131,10 @@ def process_image(image_file):
         prompt["3"]["inputs"]["image"] = image_name
 
         ws = websocket.WebSocket()
-        ws.connect("ws://{}/ws?clientId={}".format(server_address, client_id))
+        try:
+            ws.connect("ws://{}/ws?clientId={}".format(server_address, client_id))
+        except websocket.WebSocketException as e:
+            print(f"Failed to connect to WebSocket: {e}")
         images = get_images(ws, prompt)
 
         for node_id in images:
