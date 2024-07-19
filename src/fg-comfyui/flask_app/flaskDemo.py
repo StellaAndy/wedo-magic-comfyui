@@ -9,7 +9,7 @@ import json
 from PIL import Image
 import io
 
-server_address = "0.0.0.0:8188"
+server_address = "127.0.0.1:8188"
 client_id = str(uuid.uuid4())
 
 prompt_text = """

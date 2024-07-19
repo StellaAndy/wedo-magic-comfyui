@@ -33,8 +33,9 @@ WORKDIR /custom_nodes
 RUN git clone https://github.com/ltdrdata/ComfyUI-Manager.git && \
     cd ComfyUI-Manager && \
     git checkout 02b2bf96d24ed6297dad8f676aa68d7512a166b3 && \
-    rm -rf .git && \
-    git clone https://github.com/ZHO-ZHO-ZHO/ComfyUI-BRIA_AI-RMBG.git && \
+    rm -rf .git
+
+RUN git clone https://github.com/ZHO-ZHO-ZHO/ComfyUI-BRIA_AI-RMBG.git && \
     cd ComfyUI-BRIA_AI-RMBG && \
     git checkout 827fcd63ff0cfa7fbc544b8d2f4c1e3f3012742d && \
     rm -rf .git
