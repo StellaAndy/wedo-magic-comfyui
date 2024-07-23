@@ -46,7 +46,7 @@ RUN sed -i 's/http:\/\/deb.debian.org/http:\/\/mirrors.tuna.tsinghua.edu.cn/g' /
 
 RUN apt update && apt install -y aria2
 
-#RUN aria2c -x 16 --dir "/models" --out "sd-v1-5-inpainting.ckpt" "https://hf-mirror.com/runwayml/stable-diffusion-inpainting/resolve/main/sd-v1-5-inpainting.ckpt"
+RUN aria2c -x 16 --dir "/models" --out "sd-v1-5-inpainting.ckpt" "https://hf-mirror.com/runwayml/stable-diffusion-inpainting/resolve/main/sd-v1-5-inpainting.ckpt"
 RUN aria2c -x 16 --dir "/RMBG-1.4" --out "model.pth" "https://hf-mirror.com/briaai/RMBG-1.4/resolve/main/model.pth"
 
 FROM python:3.10.9-slim as base
