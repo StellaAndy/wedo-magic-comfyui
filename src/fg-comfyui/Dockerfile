@@ -23,7 +23,7 @@ FROM alpine/git:latest as repos
 
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git /code && \
     cd /code && \
-    git checkout 0a03009808a5ad13fa3a44edbabcae68576c3982 && \
+    git checkout 14764aa2e2e2b282c4a4dffbfab4c01d3e46e8a7 && \
     rm -rf .git
 
 FROM alpine/git:latest as custom_nodes
@@ -32,7 +32,7 @@ WORKDIR /custom_nodes
 
 RUN git clone https://github.com/ltdrdata/ComfyUI-Manager.git && \
     cd ComfyUI-Manager && \
-    git checkout 02b2bf96d24ed6297dad8f676aa68d7512a166b3 && \
+    git checkout 35f077c6cc417a0a3784f348548056cff87e9b6e && \
     rm -rf .git
 
 RUN git clone https://github.com/ZHO-ZHO-ZHO/ComfyUI-BRIA_AI-RMBG.git && \
